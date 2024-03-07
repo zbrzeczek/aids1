@@ -1,20 +1,33 @@
 
 #include <iostream>
 
-class Node {
-public:
-    Node *next;
-    char value;
-    Node(char value) : value(value), next(nullptr) {}
+
+struct NodeString {
+    NodeString *next;
+    char *value;
 };
 
-class Stos {
-private:
-    Node *top;
-public:
-    Stos() : top(nullptr) {}
+struct NodeInt{
+    NodeInt *next;
+    int value;
+};
 
-    ~Stos() {
+void my_strcpy(char *dest, const char *src) {
+    while (*src != '\0') {
+        *dest = *src;
+        dest++;
+        src++;
+    }
+    *dest = '\0';  // Don't forget to null-terminate the destination string
+}
+
+class StosString {
+private:
+    NodeString *top;
+public:
+    StosString() : top(nullptr) {}
+
+    ~StosString() {
         while (!isEmpty()) {
             pop();
         }
@@ -23,96 +36,137 @@ public:
     bool isEmpty() const {
         return top == nullptr;
     }
-    void push(char liczbaNowa) {
-        Node *newNode = new Node(liczbaNowa);
+    void push(char *valueNowe) {
+        NodeString *newNode = new NodeString;
+        newNode->value = (char*) malloc(strlen(valueNowe) + 1);
+        my_strcpy(newNode->value, valueNowe);
         newNode->next = top;
         top = newNode;
     }
     void pop(){
-        Node *zmienna = top;
+        NodeString *zmienna = top;
         top = top->next;
         delete zmienna;
     }
-    char topValue(){
+    char *topValue(){
         return top->value;
     }
 };
 
-class Kolejka {
+class StosInt {
 private:
-    Node *front;
-    Node *end;
+    NodeInt *top;
 public:
-    Kolejka() : front(nullptr), end(nullptr) {}
+    StosInt() : top(nullptr) {}
 
-    ~Kolejka() {
+    ~StosInt() {
         while (!isEmpty()) {
-            zKolejki();
+            pop();
         }
     }
 
     bool isEmpty() const {
-        return front == nullptr;
+        return top == nullptr;
     }
-    void doKolejki (char value) {
-        Node *newNode = new Node(value);
-        if (isEmpty()) {
-            front = newNode;
-            end = newNode;
-        } else {
-            end->next = newNode;
-            end = newNode;
-        }
+    void push(int liczbaNowa) {
+        NodeInt *newNode = new NodeInt;
+        newNode->value = liczbaNowa;
+        newNode->next = top;
+        top = newNode;
     }
-    char zKolejki () {
-        char zmiennaDisp;
-        if (!isEmpty()) {
-            Node * zmienna = front;
-            zmiennaDisp = front->value;
-            front = front->next;
-
-            if (front == nullptr) {
-                end = nullptr; // If the queue becomes empty after dequeue
-            }
-
-            delete zmienna;
-        }
-        return zmiennaDisp;
+    void pop(){
+        NodeInt *zmienna = top;
+        top = top->next;
+        delete zmienna;
+    }
+    int topValue(){
+        return top->value;
     }
 };
 
+void displayListString(NodeString *head) {
+    NodeString *current = head;
 
-void conversionONP (Kolejka *kolejka){
+    while (current != nullptr) {
+        std::cout << current->value << " ";
+        current = current->next;
+    }
+
+    std::cout << std::endl;
+}
+void displayListInt(NodeInt *head) {
+    NodeInt *current = head;
+
+    while (current != nullptr) {
+        std::cout << current->value << " ";
+        current = current->next;
+    }
+
+    std::cout << std::endl;
+}
+
+void conversionONP (NodeString *head){
+    char *string;
     char token;
-    Stos stosZnakow;
+    int tokenInt = 0;
+    StosString stosZnakow;
+
+    NodeString *zmienna;
+    zmienna = (NodeString *) malloc(sizeof(NodeString));
 
     while (token != '.') {
-        std::cin >> token;
+        while (token != ' '){
+            std::cin >> token;
+            string[tokenInt] = token;
+            string[tokenInt+1] = '\0';
+            tokenInt++;
+        }
+        if (string == "MAX" || string== "MIN") {
 
-        switch (token) {
+        }
+
+        switch (string) {
+            case :
+            case 'MIN':
+
             case '*':
-                break;
             case '/':
+
                 break;
             case '+':
-                break;
             case '-':
                 break;
             case '(':
                 stosZnakow.push('(');
                 break;
             case ')':
-                while (stosZnakow.topValue() != '('){
-                    kolejka->doKolejki(stosZnakow.topValue());
+                while (stosZnakow.topValue() != '(') {
+                    Node *nowy;
+                    nowy = (Node *) malloc(sizeof(Node));
+                    nowy->value = stosZnakow.topValue();
+                    nowy->next = NULL;
+                    zmienna->next = nowy;
+                    zmienna = nowy;
                     stosZnakow.pop();
                 }
                 stosZnakow.pop();
                 break;
             default:
-                kolejka->doKolejki(token);
+                if (zmienna == nullptr) {
+                    zmienna->value = token;
+                    zmienna->next = NULL;
+                } else {
+                    Node *nowy;
+                    nowy = (Node *) malloc(sizeof(Node));
+                    nowy->value = token;
+                    nowy->next = NULL;
+                    zmienna->next = nowy;
+                    zmienna = nowy;
+                }
         }
     }
     std::cout << "\n";
+    displayList(head);
 }
 void calculationsONP (){
 
@@ -123,12 +177,13 @@ int main(int argc, const char * argv[]) {
     int iloscRownan;
     std::cin >> iloscRownan;
 
-    Kolejka kolejki[iloscRownan];
+    Node headery[iloscRownan];
+
 
     //aby najpierw wpisac wszystko pozniej liczyc 2 osobne petle
     //konversia
     for (int i = 0; i<< iloscRownan ; i++){
-        conversionONP(&kolejki[i]);
+        conversionONP(&headery[i]);
     }
 
     //kalkulacje + wyswietlanie
