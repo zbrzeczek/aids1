@@ -38,7 +38,7 @@ public:
     }
     void push(char *valueNowe) {
         NodeString *newNode = new NodeString;
-        newNode->value = (char*) malloc(strlen(valueNowe) + 1);
+        newNode->value = new char[sizeof(valueNowe) + 1];
         my_strcpy(newNode->value, valueNowe);
         newNode->next = top;
         top = newNode;
@@ -46,6 +46,7 @@ public:
     void pop(){
         NodeString *zmienna = top;
         top = top->next;
+        delete[] zmienna->value;
         delete zmienna;
     }
     char *topValue(){
@@ -101,7 +102,6 @@ void displayListInt(NodeInt *head) {
         std::cout << current->value << " ";
         current = current->next;
     }
-
     std::cout << std::endl;
 }
 
@@ -111,8 +111,7 @@ void conversionONP (NodeString *head){
     int tokenInt = 0;
     StosString stosZnakow;
 
-    NodeString *zmienna;
-    zmienna = (NodeString *) malloc(sizeof(NodeString));
+    NodeString *zmienna = new NodeString;
 
     while (token != '.') {
         while (token != ' '){
@@ -121,8 +120,14 @@ void conversionONP (NodeString *head){
             string[tokenInt+1] = '\0';
             tokenInt++;
         }
-        if (string == "MAX" || string== "MIN") {
+        if (string == "MAX" || string== "MIN" || string == "IF" || string== "n") {
 
+        }
+        else if (string == "*" || string== "/"){
+
+        }
+        else if (string == "("){
+            stosZnakow.push('(');
         }
 
         switch (string) {
