@@ -1,94 +1,32 @@
 
 #include <iostream>
+#include "StosInt.h"
+#include "StosString.h"
 
+#define TRUE 1
+#define FALSE 0
 
-struct NodeString {
-    NodeString *next;
-    char *value;
-};
-
-struct NodeInt{
-    NodeInt *next;
+struct listNode {
     int value;
+    listNode * next;
 };
 
-void my_strcpy(char *dest, const char *src) {
-    while (*src != '\0') {
-        *dest = *src;
-        dest++;
-        src++;
+int my_strcmp(const char* str1, const char* str2) {
+    while (*str1 != '\0' && *str1 == *str2) {
+        str1++;
+        str2++;
     }
-    *dest = '\0';  // Don't forget to null-terminate the destination string
+
+    // Return the difference between the characters at the current positions
+    return *(unsigned char*)str1 - *(unsigned char*)str2;
 }
 
-class StosString {
-private:
-    NodeString *top;
-public:
-    StosString() : top(nullptr) {}
 
-    ~StosString() {
-        while (!isEmpty()) {
-            pop();
-        }
-    }
 
-    bool isEmpty() const {
-        return top == nullptr;
-    }
-    void push(char *valueNowe) {
-        NodeString *newNode = new NodeString;
-        newNode->value = new char[sizeof(valueNowe) + 1];
-        my_strcpy(newNode->value, valueNowe);
-        newNode->next = top;
-        top = newNode;
-    }
-    void pop(){
-        NodeString *zmienna = top;
-        top = top->next;
-        delete[] zmienna->value;
-        delete zmienna;
-    }
-    char *topValue(){
-        return top->value;
-    }
-};
+void displayListString(listNode *head) {
+    listNode *current = head;
 
-class StosInt {
-private:
-    NodeInt *top;
-public:
-    StosInt() : top(nullptr) {}
-
-    ~StosInt() {
-        while (!isEmpty()) {
-            pop();
-        }
-    }
-
-    bool isEmpty() const {
-        return top == nullptr;
-    }
-    void push(int liczbaNowa) {
-        NodeInt *newNode = new NodeInt;
-        newNode->value = liczbaNowa;
-        newNode->next = top;
-        top = newNode;
-    }
-    void pop(){
-        NodeInt *zmienna = top;
-        top = top->next;
-        delete zmienna;
-    }
-    int topValue(){
-        return top->value;
-    }
-};
-
-void displayListString(NodeString *head) {
-    NodeString *current = head;
-
-    while (current != nullptr) {
+    while (current->next != nullptr) {
         std::cout << current->value << " ";
         current = current->next;
     }
@@ -105,73 +43,74 @@ void displayListInt(NodeInt *head) {
     std::cout << std::endl;
 }
 
-void conversionONP (NodeString *head){
-    char *string;
+void conversionONP (){
     char token;
-    int tokenInt = 0;
+    int tokenInt;
     StosString stosZnakow;
 
-    NodeString *zmienna = new NodeString;
-
+    std::cin >> token;
     while (token != '.') {
-        while (token != ' '){
-            std::cin >> token;
-            string[tokenInt] = token;
-            string[tokenInt+1] = '\0';
+
+        if(token == ' ') std::cin >> token;
+
+        tokenInt = 0;
+
+        NodeString *zmienna = new NodeString;
+        char *temp = new char[tokenInt + 2];
+        char *string = nullptr;
+
+        listNode *head = nullptr;
+
+
+        while (token != ' ') {
+            temp[tokenInt] = token;
+            temp[tokenInt + 1] = '\0';
+
+            char* newString = new char[tokenInt + 2];
+            strcpy(newString, temp);
+
+            if (string != nullptr) delete[] string;
+            string = newString;
+
             tokenInt++;
-        }
-        if (string == "MAX" || string== "MIN" || string == "IF" || string== "n") {
-
-        }
-        else if (string == "*" || string== "/"){
-
-        }
-        else if (string == "("){
-            stosZnakow.push('(');
+            std::cin.get(token);
         }
 
-        switch (string) {
-            case :
-            case 'MIN':
-
-            case '*':
-            case '/':
-
-                break;
-            case '+':
-            case '-':
-                break;
-            case '(':
-                stosZnakow.push('(');
-                break;
-            case ')':
-                while (stosZnakow.topValue() != '(') {
-                    Node *nowy;
-                    nowy = (Node *) malloc(sizeof(Node));
-                    nowy->value = stosZnakow.topValue();
-                    nowy->next = NULL;
-                    zmienna->next = nowy;
-                    zmienna = nowy;
-                    stosZnakow.pop();
-                }
+        if (my_strcmp(string, "MAX") == FALSE || my_strcmp(string, "MIN") == FALSE ||
+        my_strcmp(string, "IF") == FALSE || my_strcmp(string, "n") == FALSE) {
+            stosZnakow.push(string);
+            std::cout << stosZnakow.topValue();
+        }
+        else if (my_strcmp(string, "*") == FALSE || my_strcmp(string, "/") == FALSE) {
+            stosZnakow.push(string);
+        }
+        else if (my_strcmp(string, "(") == FALSE) {
+            stosZnakow.push(string);
+        }
+        else if (my_strcmp(string, ")") == FALSE) {
+            while (my_strcmp(stosZnakow.topValue(), "(") != FALSE) {
+                std::cout << stosZnakow.topValue();
                 stosZnakow.pop();
-                break;
-            default:
-                if (zmienna == nullptr) {
-                    zmienna->value = token;
-                    zmienna->next = NULL;
-                } else {
-                    Node *nowy;
-                    nowy = (Node *) malloc(sizeof(Node));
-                    nowy->value = token;
-                    nowy->next = NULL;
-                    zmienna->next = nowy;
-                    zmienna = nowy;
-                }
+            }
+            stosZnakow.pop();
         }
+        else {
+            listNode *tempor = new listNode;
+            listNode *top = new listNode;
+            int x;
+            tempor->value = sscanf(string, "%d", &x);
+            tempor->next = nullptr;
+            top = head;
+            while (top->next != nullptr) top = top->next;
+            top->next = tempor;
+        }
+
+        delete []temp;
+        delete []string;
+        displayListString(head);
     }
     std::cout << "\n";
-    displayList(head);
+    //displayListString(head);
 }
 void calculationsONP (){
 
@@ -182,21 +121,21 @@ int main(int argc, const char * argv[]) {
     int iloscRownan;
     std::cin >> iloscRownan;
 
-    Node headery[iloscRownan];
+    NodeString *headery = new NodeString[iloscRownan];
 
 
     //aby najpierw wpisac wszystko pozniej liczyc 2 osobne petle
     //konversia
-    for (int i = 0; i<< iloscRownan ; i++){
+    for (int i = 0; i < iloscRownan ; i++){
         conversionONP(&headery[i]);
     }
 
     //kalkulacje + wyswietlanie
-    for (int i = 0; i<< iloscRownan ; i++){
+    for (int i = 0; i < iloscRownan ; i++){
         calculationsONP();
     }
 
-
+    delete[] headery;
     return 0;
 }
 
