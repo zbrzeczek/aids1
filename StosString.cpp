@@ -5,15 +5,7 @@
 #include "StosString.h"
 #include "NodeString.h"
 #include <iostream>
-
-/*void my_strcpy(char *dest, const char *src) {
-    while (*src != '\0') {
-        *dest = *src;
-        dest++;
-        src++;
-    }
-    *dest = '\0';  // Don't forget to null-terminate the destination string
-}*/
+#include <cstring>
 
 
 StosString::StosString() : topHead(nullptr) {}

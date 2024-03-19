@@ -1,30 +1,11 @@
 
 #include <iostream>
+#include <cstring>
 #include "StosString.h"
 #include "List.h"
 
 #define TRUE 1
 #define FALSE 0
-
-
-void my_strcpy(char *dest, const char *src) {
-    while (*src != '\0') {
-        *dest = *src;
-        dest++;
-        src++;
-    }
-    *dest = '\0';  // Don't forget to null-terminate the destination string
-}
-
-int my_strcmp(const char* str1, const char* str2) {
-    while (*str1 != '\0' && *str1 == *str2) {
-        str1++;
-        str2++;
-    }
-
-    // Return the difference between the characters at the current positions
-    return *(unsigned char*)str1 - *(unsigned char*)str2;
-}
 
 
 
@@ -63,39 +44,39 @@ void conversionONP (NodeString *head){
             temp[tokenInt + 1] = '\0';
 
             string = new char[tokenInt + 2];
-            my_strcpy(string, temp);
+            strcpy(string, temp);
 
             tokenInt++;
             std::cin.get(token);
         }
         //std::cout << string;
 
-        if (my_strcmp(string, "MAX") == FALSE || my_strcmp(string, "MIN") == FALSE || my_strcmp(string, "IF") == FALSE || my_strcmp(string, "N") == FALSE) {
-            while (!stosZnakow.isEmpty() && my_strcmp(stosZnakow.topValue(), "*") == TRUE && my_strcmp(stosZnakow.topValue(), "/") == TRUE && my_strcmp(stosZnakow.topValue(), "+") == TRUE && my_strcmp(stosZnakow.topValue(), "-") == TRUE){
+        if (strcmp(string, "MAX") == FALSE || strcmp(string, "MIN") == FALSE || strcmp(string, "IF") == FALSE || strcmp(string, "N") == FALSE) {
+            while (!stosZnakow.isEmpty() && strcmp(stosZnakow.topValue(), "*") == TRUE && strcmp(stosZnakow.topValue(), "/") == TRUE && strcmp(stosZnakow.topValue(), "+") == TRUE && strcmp(stosZnakow.topValue(), "-") == TRUE){
                 lista.insert(stosZnakow.topValue());
                 stosZnakow.pop();
             }
             stosZnakow.push(string);
         }
-        else if (my_strcmp(string, "*") == FALSE || my_strcmp(string, "/") == FALSE) {
-            while (my_strcmp(stosZnakow.topValue(), "+") == TRUE && my_strcmp(stosZnakow.topValue(), "-") == TRUE){
+        else if (strcmp(string, "*") == FALSE || strcmp(string, "/") == FALSE) {
+            while (strcmp(stosZnakow.topValue(), "+") == TRUE && strcmp(stosZnakow.topValue(), "-") == TRUE){
                 lista.insert(stosZnakow.topValue());
                 stosZnakow.pop();
             }
             stosZnakow.push(string);
         }
-        else if (my_strcmp(string, "+") == FALSE || my_strcmp(string, "-") == FALSE) {
+        else if (strcmp(string, "+") == FALSE || strcmp(string, "-") == FALSE) {
             while (!stosZnakow.isEmpty()){
                 lista.insert(stosZnakow.topValue());
                 stosZnakow.pop();
             }
             stosZnakow.push(string);
         }
-        else if (my_strcmp(string, "(") == FALSE) {
+        else if (strcmp(string, "(") == FALSE) {
             stosZnakow.push(string);
         }
-        else if (my_strcmp(string, ")") == FALSE) {
-            while (my_strcmp(stosZnakow.topValue(), "(") != FALSE) {
+        else if (strcmp(string, ")") == FALSE) {
+            while (strcmp(stosZnakow.topValue(), "(") != FALSE) {
                 std::cout << stosZnakow.topValue();
                 stosZnakow.pop();
             }
@@ -103,7 +84,7 @@ void conversionONP (NodeString *head){
             lista.insert(stosZnakow.topValue());
             stosZnakow.pop();
         }
-        else if (my_strcmp(string, ",") == FALSE) {
+        else if (strcmp(string, ",") == FALSE) {
             iloscMaxMin++;
             if (ptrTablicaMaxMin == nullptr){
 

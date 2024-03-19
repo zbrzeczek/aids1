@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <cstring>
 #include "List.h"
 #include "NodeString.h"
 
