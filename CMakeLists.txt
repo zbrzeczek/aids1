@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(aids1 main.cpp
         StosString.cpp
         StosString.h
-        StosInt.cpp
-        StosInt.h
+        List.cpp
+        List.h
+        NodeString.h
 )

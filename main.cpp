@@ -1,15 +1,20 @@
 
 #include <iostream>
-#include "StosInt.h"
 #include "StosString.h"
+#include "List.h"
 
 #define TRUE 1
 #define FALSE 0
 
-struct listNode {
-    int value;
-    listNode * next;
-};
+
+void my_strcpy(char *dest, const char *src) {
+    while (*src != '\0') {
+        *dest = *src;
+        dest++;
+        src++;
+    }
+    *dest = '\0';  // Don't forget to null-terminate the destination string
+}
 
 int my_strcmp(const char* str1, const char* str2) {
     while (*str1 != '\0' && *str1 == *str2) {
@@ -23,30 +28,24 @@ int my_strcmp(const char* str1, const char* str2) {
 
 
 
-void displayListString(listNode *head) {
-    listNode *current = head;
+void displayListString(NodeString *head) {
+    NodeString *current = head;
 
-    while (current->next != nullptr) {
+    while (current != nullptr && current->value != nullptr) {
         std::cout << current->value << " ";
         current = current->next;
     }
 
     std::cout << std::endl;
 }
-void displayListInt(NodeInt *head) {
-    NodeInt *current = head;
 
-    while (current != nullptr) {
-        std::cout << current->value << " ";
-        current = current->next;
-    }
-    std::cout << std::endl;
-}
-
-void conversionONP (){
+void conversionONP (NodeString *head){
     char token;
     int tokenInt;
     StosString stosZnakow;
+    List lista(head);
+    int *ptrTablicaMaxMin = nullptr;
+    int iloscMaxMin = 0;
 
     std::cin >> token;
     while (token != '.') {
@@ -55,33 +54,41 @@ void conversionONP (){
 
         tokenInt = 0;
 
-        NodeString *zmienna = new NodeString;
+        //NodeString *zmienna = new NodeString;
         char *temp = new char[tokenInt + 2];
-        char *string = nullptr;
 
-        listNode *head = nullptr;
-
-
+        char* string;
         while (token != ' ') {
             temp[tokenInt] = token;
             temp[tokenInt + 1] = '\0';
 
-            char* newString = new char[tokenInt + 2];
-            strcpy(newString, temp);
-
-            if (string != nullptr) delete[] string;
-            string = newString;
+            string = new char[tokenInt + 2];
+            my_strcpy(string, temp);
 
             tokenInt++;
             std::cin.get(token);
         }
+        //std::cout << string;
 
-        if (my_strcmp(string, "MAX") == FALSE || my_strcmp(string, "MIN") == FALSE ||
-        my_strcmp(string, "IF") == FALSE || my_strcmp(string, "n") == FALSE) {
+        if (my_strcmp(string, "MAX") == FALSE || my_strcmp(string, "MIN") == FALSE || my_strcmp(string, "IF") == FALSE || my_strcmp(string, "N") == FALSE) {
+            while (!stosZnakow.isEmpty() && my_strcmp(stosZnakow.topValue(), "*") == TRUE && my_strcmp(stosZnakow.topValue(), "/") == TRUE && my_strcmp(stosZnakow.topValue(), "+") == TRUE && my_strcmp(stosZnakow.topValue(), "-") == TRUE){
+                lista.insert(stosZnakow.topValue());
+                stosZnakow.pop();
+            }
             stosZnakow.push(string);
-            std::cout << stosZnakow.topValue();
         }
         else if (my_strcmp(string, "*") == FALSE || my_strcmp(string, "/") == FALSE) {
+            while (my_strcmp(stosZnakow.topValue(), "+") == TRUE && my_strcmp(stosZnakow.topValue(), "-") == TRUE){
+                lista.insert(stosZnakow.topValue());
+                stosZnakow.pop();
+            }
+            stosZnakow.push(string);
+        }
+        else if (my_strcmp(string, "+") == FALSE || my_strcmp(string, "-") == FALSE) {
+            while (!stosZnakow.isEmpty()){
+                lista.insert(stosZnakow.topValue());
+                stosZnakow.pop();
+            }
             stosZnakow.push(string);
         }
         else if (my_strcmp(string, "(") == FALSE) {
@@ -93,16 +100,21 @@ void conversionONP (){
                 stosZnakow.pop();
             }
             stosZnakow.pop();
+            lista.insert(stosZnakow.topValue());
+            stosZnakow.pop();
+        }
+        else if (my_strcmp(string, ",") == FALSE) {
+            iloscMaxMin++;
+            if (ptrTablicaMaxMin == nullptr){
+
+            }
+            else {
+                ptrTablicaMaxMin = (int *)realloc(ptrTablicaMaxMin, iloscMaxMin * sizeof(int));
+
+            }
         }
         else {
-            listNode *tempor = new listNode;
-            listNode *top = new listNode;
-            int x;
-            tempor->value = sscanf(string, "%d", &x);
-            tempor->next = nullptr;
-            top = head;
-            while (top->next != nullptr) top = top->next;
-            top->next = tempor;
+            lista.insert(string);
         }
 
         delete []temp;
@@ -124,9 +136,12 @@ int main(int argc, const char * argv[]) {
     NodeString *headery = new NodeString[iloscRownan];
 
 
+
     //aby najpierw wpisac wszystko pozniej liczyc 2 osobne petle
     //konversia
     for (int i = 0; i < iloscRownan ; i++){
+        headery[i].value = nullptr;
+        headery[i].next = nullptr;
         conversionONP(&headery[i]);
     }
 
@@ -135,7 +150,7 @@ int main(int argc, const char * argv[]) {
         calculationsONP();
     }
 
-    delete[] headery;
+    //delete[] headery;
     return 0;
 }
 

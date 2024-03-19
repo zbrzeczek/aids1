@@ -3,6 +3,7 @@
 //
 
 #include "StosString.h"
+#include "NodeString.h"
 #include <iostream>
 
 /*void my_strcpy(char *dest, const char *src) {
@@ -29,7 +30,8 @@ int StosString::isEmpty() const {
 
 void StosString::push(char *valueNowe) {
     NodeString *newNode = new NodeString;
-    newNode->value = valueNowe;
+    newNode->value = new char[strlen(valueNowe) + 1]; // +1 for the null terminator
+    strcpy(newNode->value, valueNowe);
     newNode->next = topHead;
     topHead = newNode;
     //delete newNode;

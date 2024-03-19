@@ -5,10 +5,7 @@
 #ifndef AIDS1_STOSSTRING_H
 #define AIDS1_STOSSTRING_H
 
-struct NodeString {
-    NodeString *next;
-    char *value;
-};
+#include "NodeString.h"
 
 class StosString {
 private:
