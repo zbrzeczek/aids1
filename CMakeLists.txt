@@ -9,4 +9,7 @@ add_executable(aids1 main.cpp
         List.cpp
         List.h
         NodeString.h
+        StosInt.cpp
+        StosInt.h
+        NodeInt.h
 )

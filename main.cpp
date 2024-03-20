@@ -2,12 +2,25 @@
 #include <iostream>
 #include <cstring>
 #include "StosString.h"
+#include "StosInt.h"
 #include "List.h"
 
 #define TRUE 1
 #define FALSE 0
 
 
+int priority (const char* string){
+    if (strcmp(string, "(") == FALSE || strcmp(string, ")") == FALSE){
+        return -1;
+    }
+    else if (strcmp(string, "MAX") == FALSE || strcmp(string, "MIN") == FALSE || strcmp(string, "IF") == FALSE || strcmp(string, "N") == FALSE){
+        return 2;
+    }
+    else if (strcmp(string, "*") == FALSE || strcmp(string, "/") == FALSE) {
+        return 1;
+    }
+    else return 0;
+}
 
 void displayListString(NodeString *head) {
     NodeString *current = head;
@@ -25,13 +38,14 @@ void conversionONP (NodeString *head){
     int tokenInt;
     StosString stosZnakow;
     List lista(head);
-    int *ptrTablicaMaxMin = nullptr;
-    int iloscMaxMin = 0;
+
+    StosInt stosIloscMinMax;
 
     std::cin >> token;
     while (token != '.') {
 
         if(token == ' ') std::cin >> token;
+        if(token == '.') break;
 
         tokenInt = 0;
 
@@ -51,59 +65,45 @@ void conversionONP (NodeString *head){
         }
         //std::cout << string;
 
-        if (strcmp(string, "MAX") == FALSE || strcmp(string, "MIN") == FALSE || strcmp(string, "IF") == FALSE || strcmp(string, "N") == FALSE) {
-            while (!stosZnakow.isEmpty() && strcmp(stosZnakow.topValue(), "*") == TRUE && strcmp(stosZnakow.topValue(), "/") == TRUE && strcmp(stosZnakow.topValue(), "+") == TRUE && strcmp(stosZnakow.topValue(), "-") == TRUE){
-                lista.insert(stosZnakow.topValue());
-                stosZnakow.pop();
-            }
-            stosZnakow.push(string);
-        }
-        else if (strcmp(string, "*") == FALSE || strcmp(string, "/") == FALSE) {
-            while (strcmp(stosZnakow.topValue(), "+") == TRUE && strcmp(stosZnakow.topValue(), "-") == TRUE){
-                lista.insert(stosZnakow.topValue());
-                stosZnakow.pop();
-            }
-            stosZnakow.push(string);
-        }
-        else if (strcmp(string, "+") == FALSE || strcmp(string, "-") == FALSE) {
-            while (!stosZnakow.isEmpty()){
-                lista.insert(stosZnakow.topValue());
-                stosZnakow.pop();
-            }
-            stosZnakow.push(string);
+        if (isdigit(string[0])){
+            lista.insert(string);
         }
         else if (strcmp(string, "(") == FALSE) {
             stosZnakow.push(string);
         }
         else if (strcmp(string, ")") == FALSE) {
             while (strcmp(stosZnakow.topValue(), "(") != FALSE) {
-                std::cout << stosZnakow.topValue();
+                lista.insert(stosZnakow.topValue());
                 stosZnakow.pop();
             }
             stosZnakow.pop();
-            lista.insert(stosZnakow.topValue());
-            stosZnakow.pop();
         }
-        else if (strcmp(string, ",") == FALSE) {
-            iloscMaxMin++;
-            if (ptrTablicaMaxMin == nullptr){
-
-            }
-            else {
-                ptrTablicaMaxMin = (int *)realloc(ptrTablicaMaxMin, iloscMaxMin * sizeof(int));
-
+        else if (strcmp(string, ",") == FALSE){
+            while (strcmp(stosZnakow.topValue(), "(") != FALSE) {
+                lista.insert(stosZnakow.topValue());
+                stosZnakow.pop();
             }
         }
         else {
-            lista.insert(string);
+            if (stosZnakow.isEmpty()) stosZnakow.push(string);
+            else {
+                while (priority(stosZnakow.topValue()) >= priority(string)) {
+                    lista.insert(stosZnakow.topValue());
+                    stosZnakow.pop();
+                    if (stosZnakow.isEmpty()) break;
+                }
+                stosZnakow.push(string);
+            }
         }
 
         delete []temp;
         delete []string;
-        displayListString(head);
     }
-    std::cout << "\n";
-    //displayListString(head);
+    while (!stosZnakow.isEmpty()){
+        lista.insert(stosZnakow.topValue());
+        stosZnakow.pop();
+    }
+    displayListString(head);
 }
 void calculationsONP (){
 
