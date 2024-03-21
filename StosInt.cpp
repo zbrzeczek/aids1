@@ -16,9 +16,9 @@ int StosInt::isEmpty() const {
     return topHead == nullptr;
 }
 
-void StosInt::push(int valueNowe) {
+void StosInt::push(int value) {
     NodeInt *newNode = new NodeInt;
-    newNode->value = valueNowe;
+    newNode->value = 1;
     newNode->next = topHead;
     topHead = newNode;
 }
@@ -28,6 +28,11 @@ void StosInt::pop() {
     topHead = topHead->next;
     delete temp;
 }
+
+void StosInt::add(int add) {
+    topHead->value = topHead->value + add;
+}
+
 int StosInt::topValue() {
     return topHead->value;
 }

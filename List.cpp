@@ -7,14 +7,14 @@
 #include "List.h"
 #include "NodeString.h"
 
-List::List(NodeString *head) : head(head){}
+List::List() : head(nullptr){}
 List::~List() {
     while (head != nullptr){
         del();
     }
 }
 void List::insert(char *value) {
-    if (head->value != nullptr){
+    if (head != nullptr){
         NodeString* newNode = new NodeString;
         newNode->value = new char[strlen(value) + 1]; // +1 for the null terminator
         strcpy(newNode->value, value);
@@ -27,18 +27,20 @@ void List::insert(char *value) {
         temp->next = newNode;
     }
     else{
-        head->value = new char[strlen(value) + 1];
-        strcpy(head->value, value);
-        head->next = nullptr;
+        NodeString* newNode = new NodeString;
+        newNode->value = new char[strlen(value) + 1];
+        strcpy(newNode->value, value);
+        newNode->next = nullptr;
+        head = newNode;
     }
 }
 
-char *List::disp(int num) {
+void List::disp() {
     NodeString *temp = head;
-    for (int i = 0; i<num; i++){
+    while (temp != nullptr) {
+        std::cout << temp->value << " ";
         temp = temp->next;
     }
-    return temp->value;
 }
 
 void List::del() {
@@ -47,4 +49,11 @@ void List::del() {
         temp = temp->next;
     }
     delete temp;
+}
+int List::isEmpty() {
+    return head == nullptr;
+}
+char * List::getHeadValue() {
+    if (head != nullptr) return head->value;
+    else return nullptr;
 }

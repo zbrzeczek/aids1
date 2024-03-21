@@ -11,12 +11,14 @@ class List {
 private:
     NodeString *head;
 public:
-    List(NodeString *head);
+    List();
     ~List();
 
     void insert(char * value);
     void del();
-    char * disp (int num);
+    void disp ();
+    int isEmpty();
+    char *getHeadValue();
 };
 
 

@@ -16,8 +16,9 @@ public:
     ~StosInt();
 
     int isEmpty() const;
-    void push(int valueNowe);
+    void push(int value);
     void pop();
+    void add(int add);
     int topValue();
 };
 
