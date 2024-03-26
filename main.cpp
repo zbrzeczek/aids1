@@ -88,13 +88,14 @@ void calculationsOperator(char *token, StosInt *stos) {
         char *compareMaxMin = new char[4];
         strncpy(compareMaxMin, token, 3);
         iloscMinMax = stringToInt(tempptr);
-        for (int i =0; i<iloscMinMax-1; i++){
+        for (int i =0; i<iloscMinMax-2; i++){
             op1 = stos->topValue();
             stos->pop();
             op2 = stos->topValue();
             stos->pop();
-            if (strcmp(compareMaxMin, "MAX") == FALSE) result = max(op1, op2);
+            if (strncmp(token, "MAX", 3) == FALSE) result = max(op1, op2);
             else result = min(op1, op2);
+            stos->push(result);
         }
     }
     else {
@@ -130,9 +131,9 @@ void calculationsOperator(char *token, StosInt *stos) {
             stos->pop();
             result = op2 - op1;
         }
+        stos->push(result);
     }
 
-    stos->push(result);
     std::cout << std::endl;
 }
 
@@ -199,24 +200,6 @@ void conversionONP (List *lista){
             else {
                 while (priority(stosZnakow.topValue()) >= priority(string)){
                     znakDoListy(&stosZnakow, &stosMaxMin, lista);
-                    /*if (strcmp(stosZnakow.topValue(), "MIN") == FALSE || strcmp(stosZnakow.topValue(), "MAX") == FALSE){
-                        char *zmienna = stosZnakow.topValue();
-                        char *liczbaMinMax = intToString(stosMaxMin.topValue());
-
-                        char *newValue = new char[strlen(stosZnakow.topValue()) + strlen(liczbaMinMax) + 1];
-                        strcpy(newValue, zmienna);
-                        strcat(newValue, liczbaMinMax);
-
-                        newValue[strlen(stosZnakow.topValue()) +1 ] = '\0';
-
-                        lista->insert(newValue);
-                        stosMaxMin.pop();
-                        if (!stosMaxMin.isEmpty())stosMaxMin.add(1);
-                    }
-                    else {
-                        lista->insert(stosZnakow.topValue());
-                    }
-                    stosZnakow.pop();*/
                     if (stosZnakow.isEmpty()) break;
                 }
                 stosZnakow.push(string);
