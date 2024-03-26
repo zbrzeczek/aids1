@@ -3,8 +3,9 @@
 //
 
 #include "StosInt.h"
+#include <iostream>
 
-StosInt::StosInt() : topHead(nullptr) {}
+StosInt::StosInt() : topHead(nullptr), bottom(nullptr) {}
 
 StosInt::~StosInt(){
     while (!isEmpty()) {
@@ -18,9 +19,10 @@ int StosInt::isEmpty() const {
 
 void StosInt::push(int value) {
     NodeInt *newNode = new NodeInt;
-    newNode->value = 1;
+    newNode->value = value;
     newNode->next = topHead;
     topHead = newNode;
+    if (bottom == nullptr) bottom = newNode;
 }
 void StosInt::pop() {
     NodeInt *temp = new NodeInt;
@@ -31,6 +33,15 @@ void StosInt::pop() {
 
 void StosInt::add(int add) {
     topHead->value = topHead->value + add;
+}
+
+void StosInt::display() {
+    NodeInt *current = topHead; // Start from the bottom of the stack
+
+    while (current != nullptr) {
+        std::cout << current->value << " "; // Display the value
+        current = current->next; // Move to the next node
+    }
 }
 
 int StosInt::topValue() {

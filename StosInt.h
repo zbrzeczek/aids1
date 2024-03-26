@@ -10,6 +10,7 @@
 class StosInt {
 private:
     NodeInt *topHead;
+    NodeInt *bottom;
 public:
     StosInt();
 
@@ -19,6 +20,7 @@ public:
     void push(int value);
     void pop();
     void add(int add);
+    void display();
     int topValue();
 };
 

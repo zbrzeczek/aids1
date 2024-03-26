@@ -7,6 +7,19 @@
 
 #define TRUE 1
 #define FALSE 0
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#define min(a, b) ((a) < (b) ? (a) : (b))
+
+int stringToInt (char *string) {
+    int result = 0;
+
+    while (*string != '\0') {
+        result = result * 10 + (*string - '0');
+        string++;
+    }
+
+    return result;
+}
 
 char * intToString(int num) {
     int numDigits = 0;
@@ -64,11 +77,63 @@ void znakDoListy(StosString *stosZnakow, StosInt *stosMaxMin, List *lista) {
 }
 
 void calculationsOperator(char *token, StosInt *stos) {
+    int iloscMinMax;
+    int result;
+    int op1, op2, op3;
+    std::cout << token << " ";
+    stos->display();
 
-}
+    if (strlen(token) > 3) {
+        char *tempptr = token+3;
+        char *compareMaxMin = new char[4];
+        strncpy(compareMaxMin, token, 3);
+        iloscMinMax = stringToInt(tempptr);
+        for (int i =0; i<iloscMinMax-1; i++){
+            op1 = stos->topValue();
+            stos->pop();
+            op2 = stos->topValue();
+            stos->pop();
+            if (strcmp(compareMaxMin, "MAX") == FALSE) result = max(op1, op2);
+            else result = min(op1, op2);
+        }
+    }
+    else {
+        op1 = stos->topValue();
+        stos->pop();
+        if (strcmp(token, "N") == FALSE) {
+            result = -op1;
+        }
+        else if (strcmp(token, "IF") == FALSE){
+            op2 = stos->topValue();
+            stos->pop();
+            op3 = stos->topValue();
+            stos->pop();
+            result = op3 > 0 ? op2 : op1;
+        }
+        else if (strcmp(token, "*") == FALSE){
+            op2 = stos->topValue();
+            stos->pop();
+            result = op1*op2;
+        }
+        else if (strcmp(token, "/") == FALSE){
+            op2 = stos->topValue();
+            stos->pop();
+            result = op2/op1;
+        }
+        else if (strcmp(token, "+") == FALSE) {
+            op2 = stos->topValue();
+            stos->pop();
+            result = op1+op2;
+        }
+        else {
+            op2 = stos->topValue();
+            stos->pop();
+            result = op2 - op1;
+        }
+    }
 
-int stringToInt (char *string) {
-
+    stos->push(result);
+    std::cout << std::endl;
 }
 
 void conversionONP (List *lista){
@@ -166,19 +231,27 @@ void conversionONP (List *lista){
         //lista->insert(stosZnakow.topValue());
         //1stosZnakow.pop();
     }
-    lista->disp();
 }
+
 void calculationsONP (List *lista){
     char *token;
     StosInt stosint;
 
-    if (!lista->isEmpty()) token = lista->getHeadValue();
+    lista->disp();
+    std::cout << std::endl;
+
     while(!lista->isEmpty()) {
+        token = lista->getHeadValue();
         if (isdigit(token[0])) {
             stosint.push(stringToInt(token));
         }
-        else calculationsOperator(token, &stosint);
+        else {
+            calculationsOperator(token, &stosint);
+        }
+        lista->del();
     }
+    std::cout << stosint.topValue();
+    stosint.pop();
 }
 
 

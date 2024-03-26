@@ -45,14 +45,14 @@ void List::disp() {
 
 void List::del() {
     NodeString *temp = head;
-    while (temp->next != nullptr) {
-        temp = temp->next;
-    }
+    head = head->next; // Move head to the next node
     delete temp;
 }
+
 int List::isEmpty() {
     return head == nullptr;
 }
+
 char * List::getHeadValue() {
     if (head != nullptr) return head->value;
     else return nullptr;
