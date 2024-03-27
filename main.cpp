@@ -55,10 +55,10 @@ int priority (const char* string){
     else return 0;
 }
 
-void znakDoListy(StosString *stosZnakow, StosInt *stosMaxMin, List *lista) {
+void znakDoListy(StosString *stosZnakow, List *lista, int zmiennaMaxMin) {
     if (strcmp(stosZnakow->topValue(), "MIN") == FALSE || strcmp(stosZnakow->topValue(), "MAX") == FALSE){
         char *zmienna = stosZnakow->topValue();
-        char *liczbaMinMax = intToString(stosMaxMin->topValue());
+        char *liczbaMinMax = intToString(zmiennaMaxMin);
 
         char *newValue = new char[strlen(stosZnakow->topValue()) + strlen(liczbaMinMax) + 1];
         strcpy(newValue, zmienna);
@@ -67,8 +67,8 @@ void znakDoListy(StosString *stosZnakow, StosInt *stosMaxMin, List *lista) {
         newValue[strlen(stosZnakow->topValue()) +1 ] = '\0';
 
         lista->insert(newValue);
-        stosMaxMin->pop();
-        if (!stosMaxMin->isEmpty()) stosMaxMin->add(1);
+        //stosMaxMin->pop();
+        //if (!stosMaxMin->isEmpty()) stosMaxMin->add(1);
     }
     else {
         lista->insert(stosZnakow->topValue());
@@ -76,7 +76,7 @@ void znakDoListy(StosString *stosZnakow, StosInt *stosMaxMin, List *lista) {
     stosZnakow->pop();
 }
 
-void calculationsOperator(char *token, StosInt *stos) {
+void calculationsOperator(char *token, StosInt *stos, int *calculations) {
     int iloscMinMax;
     int result;
     int op1, op2, op3;
@@ -88,7 +88,7 @@ void calculationsOperator(char *token, StosInt *stos) {
         char *compareMaxMin = new char[4];
         strncpy(compareMaxMin, token, 3);
         iloscMinMax = stringToInt(tempptr);
-        for (int i =0; i<iloscMinMax-2; i++){
+        for (int i =0; i<iloscMinMax-1; i++){
             op1 = stos->topValue();
             stos->pop();
             op2 = stos->topValue();
@@ -119,7 +119,8 @@ void calculationsOperator(char *token, StosInt *stos) {
         else if (strcmp(token, "/") == FALSE){
             op2 = stos->topValue();
             stos->pop();
-            result = op2/op1;
+            if(op1 == 0) *calculations = FALSE;
+            else result = op2/op1;
         }
         else if (strcmp(token, "+") == FALSE) {
             op2 = stos->topValue();
@@ -138,6 +139,7 @@ void calculationsOperator(char *token, StosInt *stos) {
 }
 
 void conversionONP (List *lista){
+    int zmiennaMaxMin;
     char token;
     int tokenInt;
     StosString stosZnakow;
@@ -171,46 +173,51 @@ void conversionONP (List *lista){
             lista->insert(string);
         }
         else if (strcmp(string, "(") == FALSE) {
+            stosMaxMin.push(1);
             stosZnakow.push(string);
         }
         else if (strcmp(string, ")") == FALSE) {
-            while (strcmp(stosZnakow.topValue(), "(") != FALSE) {
-                znakDoListy(&stosZnakow, &stosMaxMin, lista);
-                /*lista->insert(stosZnakow.topValue());
-                stosZnakow.pop();*/
+            if (!stosMaxMin.isEmpty()) {
+                zmiennaMaxMin = stosMaxMin.topValue();
+                stosMaxMin.pop();
             }
+            while (strcmp(stosZnakow.topValue(), "(") != FALSE) {
+                znakDoListy(&stosZnakow, lista, zmiennaMaxMin);
+                    /*lista->insert(stosZnakow.topValue());
+                    stosZnakow.pop();*/
+            }
+
             stosZnakow.pop();
         }
         else if (strcmp(string, ",") == FALSE){
-            stosMaxMin.add(1);
+            if (!stosMaxMin.isEmpty()) stosMaxMin.add(1);
+
             //do przypadkow gdy w min/max/if jest jakies rownanie w srodku ex. min( 1 , 2 * 5 + 6 , 2 ) .
             while (strcmp(stosZnakow.topValue(), "(") != FALSE){
-                znakDoListy(&stosZnakow, &stosMaxMin, lista);
+                znakDoListy(&stosZnakow, lista, zmiennaMaxMin);
                 /*lista->insert(stosZnakow.topValue());
                 stosZnakow.pop();*/
             }
         }
         else {
             //ogarnienie liczby przy max min
-            if (strcmp(string, "MIN") == FALSE || strcmp(string, "MAX") == FALSE) stosMaxMin.push(1);
-            else if (strcmp(string, "IF") == FALSE) stosMaxMin.add(-2);
+            //if (strcmp(string, "MIN") == FALSE || strcmp(string, "MAX") == FALSE) stosMaxMin.push(1);
+            if (strcmp(string, "IF") == FALSE && !stosMaxMin.isEmpty()) stosMaxMin.add(-2);
 
-
-            if (stosZnakow.isEmpty()) stosZnakow.push(string);
-            else {
+            if (!stosZnakow.isEmpty()) {
                 while (priority(stosZnakow.topValue()) >= priority(string)){
-                    znakDoListy(&stosZnakow, &stosMaxMin, lista);
+                    znakDoListy(&stosZnakow, lista, zmiennaMaxMin);
                     if (stosZnakow.isEmpty()) break;
                 }
-                stosZnakow.push(string);
             }
+            stosZnakow.push(string);
         }
 
         delete []temp;
         delete []string;
     }
     while (!stosZnakow.isEmpty()){
-        znakDoListy(&stosZnakow, &stosMaxMin, lista);
+        znakDoListy(&stosZnakow, lista, zmiennaMaxMin);
         //lista->insert(stosZnakow.topValue());
         //1stosZnakow.pop();
     }
@@ -219,6 +226,7 @@ void conversionONP (List *lista){
 void calculationsONP (List *lista){
     char *token;
     StosInt stosint;
+    int calcualtions = TRUE;
 
     lista->disp();
     std::cout << std::endl;
@@ -229,11 +237,13 @@ void calculationsONP (List *lista){
             stosint.push(stringToInt(token));
         }
         else {
-            calculationsOperator(token, &stosint);
+            calculationsOperator(token, &stosint, &calcualtions);
+            if (calcualtions == FALSE) break;
         }
         lista->del();
     }
-    std::cout << stosint.topValue();
+    if (calcualtions == FALSE) std::cout << "ERROR" << std::endl;
+    else std::cout << stosint.topValue() << std::endl;
     stosint.pop();
 }
 
@@ -242,7 +252,7 @@ int main(int argc, const char * argv[]) {
     int iloscRownan;
     std::cin >> iloscRownan;
 
-    List arrayLists[iloscRownan];
+    List* arrayLists = new List[iloscRownan];
     //NodeString *headery = new NodeString[iloscRownan];
 
 
@@ -256,9 +266,10 @@ int main(int argc, const char * argv[]) {
     //kalkulacje + wyswietlanie
     for (int i = 0; i < iloscRownan ; i++){
         calculationsONP(&arrayLists[i]);
+        std::cout << std::endl;
     }
 
-    //delete[] headery;
+    delete[] arrayLists;
     return 0;
 }
 
