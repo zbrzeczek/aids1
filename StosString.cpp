@@ -30,8 +30,7 @@ void StosString::push(char *valueNowe) {
 }
 
 void StosString::pop(){
-    NodeString *temp = new NodeString;
-    temp = topHead;
+    NodeString *temp = topHead;
     topHead = topHead->next;
     delete temp;
 }

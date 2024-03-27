@@ -25,8 +25,7 @@ void StosInt::push(int value) {
     if (bottom == nullptr) bottom = newNode;
 }
 void StosInt::pop() {
-    NodeInt *temp = new NodeInt;
-    temp = topHead;
+    NodeInt *temp = topHead;
     topHead = topHead->next;
     delete temp;
 }

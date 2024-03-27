@@ -97,6 +97,7 @@ void calculationsOperator(char *token, StosInt *stos, int *calculations) {
             else result = min(op1, op2);
             stos->push(result);
         }
+        delete[] compareMaxMin;
     }
     else {
         op1 = stos->topValue();
@@ -205,9 +206,17 @@ void conversionONP (List *lista){
             if (strcmp(string, "IF") == FALSE && !stosMaxMin.isEmpty()) stosMaxMin.add(-2);
 
             if (!stosZnakow.isEmpty()) {
-                while (priority(stosZnakow.topValue()) >= priority(string)){
-                    znakDoListy(&stosZnakow, lista, zmiennaMaxMin);
-                    if (stosZnakow.isEmpty()) break;
+                if (strcmp(string, "N") != FALSE){
+                    while (priority(stosZnakow.topValue()) >= priority(string)) {
+                        znakDoListy(&stosZnakow, lista, zmiennaMaxMin);
+                        if (stosZnakow.isEmpty()) break;
+                    }
+                }
+                else {
+                    while (priority(stosZnakow.topValue()) > priority(string)) {
+                        znakDoListy(&stosZnakow, lista, zmiennaMaxMin);
+                        if (stosZnakow.isEmpty()) break;
+                    }
                 }
             }
             stosZnakow.push(string);
