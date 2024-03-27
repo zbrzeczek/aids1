@@ -169,7 +169,6 @@ void conversionONP (List *lista){
             tokenInt++;
             std::cin.get(token);
         }
-
         if (isdigit(string[0])){
             lista->insert(string);
         }
@@ -178,14 +177,15 @@ void conversionONP (List *lista){
             stosZnakow.push(string);
         }
         else if (strcmp(string, ")") == FALSE) {
-            if (!stosMaxMin.isEmpty()) {
-                zmiennaMaxMin = stosMaxMin.topValue();
-                stosMaxMin.pop();
-            }
+
             while (strcmp(stosZnakow.topValue(), "(") != FALSE) {
                 znakDoListy(&stosZnakow, lista, zmiennaMaxMin);
                     /*lista->insert(stosZnakow.topValue());
                     stosZnakow.pop();*/
+            }
+            if (!stosMaxMin.isEmpty()) {
+                zmiennaMaxMin = stosMaxMin.topValue();
+                stosMaxMin.pop();
             }
 
             stosZnakow.pop();
@@ -203,22 +203,14 @@ void conversionONP (List *lista){
         else {
             //ogarnienie liczby przy max min
             //if (strcmp(string, "MIN") == FALSE || strcmp(string, "MAX") == FALSE) stosMaxMin.push(1);
-            if (strcmp(string, "IF") == FALSE && !stosMaxMin.isEmpty()) stosMaxMin.add(-2);
+            if (strcmp(string, "IF") == FALSE && !stosMaxMin.isEmpty() && (strcmp(string, "MAX") == FALSE || strcmp(string, "MIN") == FALSE)) stosMaxMin.add(-2);
 
-            if (!stosZnakow.isEmpty()) {
-                if (strcmp(string, "N") != FALSE){
-                    while (priority(stosZnakow.topValue()) >= priority(string)) {
-                        znakDoListy(&stosZnakow, lista, zmiennaMaxMin);
-                        if (stosZnakow.isEmpty()) break;
-                    }
-                }
-                else {
-                    while (priority(stosZnakow.topValue()) > priority(string)) {
-                        znakDoListy(&stosZnakow, lista, zmiennaMaxMin);
-                        if (stosZnakow.isEmpty()) break;
-                    }
-                }
+            while (!stosZnakow.isEmpty() && priority(stosZnakow.topValue()) >= priority(string)) {
+                if (strcmp(stosZnakow.topValue(), "N") == FALSE && priority(stosZnakow.topValue()) == priority(string)) break;
+                znakDoListy(&stosZnakow, lista, zmiennaMaxMin);
+                if (stosZnakow.isEmpty()) break;
             }
+
             stosZnakow.push(string);
         }
 
@@ -257,7 +249,7 @@ void calculationsONP (List *lista){
 }
 
 
-int main(int argc, const char * argv[]) {
+int main() {
     int iloscRownan;
     std::cin >> iloscRownan;
 
