@@ -5,55 +5,93 @@
 #include <iostream>
 #include <cstring>
 #include "List.h"
-#include "NodeString.h"
+#include "Node.h"
 
-List::List() : head(nullptr){}
+#define TRUE 1
+#define FALSE 0
+
+List::List() : head(nullptr), bottom(nullptr){}
 List::~List() {
     while (head != nullptr){
         del();
     }
 }
-void List::insert(char *value) {
-    if (head != nullptr){
-        NodeString* newNode = new NodeString;
-        newNode->value = new char[strlen(value) + 1]; // +1 for the null terminator
-        strcpy(newNode->value, value);
+void List::insert(int value) {
+    //if (bottom != nullptr){
+        Node* newNode = new Node;
+        newNode->value.intValue = value; // +1 for the null terminator
+        newNode->isInt= TRUE;
         newNode->next = nullptr;
 
-        NodeString *temp = head;
+        /*Node *temp = head;
+        while (temp->next != nullptr) {
+            temp = temp->next;
+        }
+        head->next = newNode;*/
+    if (head == nullptr) {
+        head = bottom = newNode;
+    } else {
+        bottom->next = newNode;
+        bottom = newNode;
+    }
+    //}
+    //else{
+    //}
+}
+
+void List::insertChar(char *value) {
+    /*if (head != nullptr){
+        Node* newNode = new Node;
+        newNode->isInt= FALSE;
+        newNode->value.stringValue = new char[strlen(value) + 1]; // +1 for the null terminator
+        strcpy(newNode->value.stringValue, value);
+        newNode->next = nullptr;
+
+        Node *temp = head;
         while (temp->next != nullptr) {
             temp = temp->next;
         }
         temp->next = newNode;
-    }
-    else{
-        NodeString* newNode = new NodeString;
-        newNode->value = new char[strlen(value) + 1];
-        strcpy(newNode->value, value);
+    //}*/
+    //else{
+        Node* newNode = new Node;
+        newNode->isInt= FALSE;
+    newNode->value.stringValue = new char[strlen(value) + 1];
+    strcpy(newNode->value.stringValue, value);
         newNode->next = nullptr;
-        head = newNode;
+    if (head == nullptr) {
+        head = bottom = newNode;
+    } else {
+        bottom->next = newNode;
+        bottom = newNode;
     }
+    //}
 }
 
 void List::disp() {
-    NodeString *temp = head;
+    Node *temp = head;
     while (temp != nullptr) {
-        printf("%s ", temp->value);
+        if (!temp->isInt) printf("%s ", temp->value.stringValue);
+        else printf("%d ", temp->value.intValue);
         temp = temp->next;
     }
 }
 
 void List::del() {
-    NodeString *temp = head;
-    head = head->next; // Move head to the next node
-    delete temp;
+    if (head != nullptr) {
+        Node *temp = head;
+        head = head->next; // Move head to the next node
+        if (!temp->isInt) {
+            delete[] temp->value.stringValue; // Deallocate memory for string value
+        }
+        delete temp; // Deallocate memory for node
+    }
 }
 
 int List::isEmpty() {
     return head == nullptr;
 }
 
-char * List::getHeadValue() {
-    if (head != nullptr) return head->value;
-    else return nullptr;
+Node* List::getHeadValue() {
+    return head;
 }

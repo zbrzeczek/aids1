@@ -5,20 +5,22 @@
 #ifndef AIDS1_LIST_H
 #define AIDS1_LIST_H
 
-#include "NodeString.h"
+#include "Node.h"
 
 class List {
 private:
-    NodeString *head;
+    Node *head;
+    Node *bottom;
 public:
     List();
     ~List();
 
-    void insert(char * value);
+    void insert(int value);
+    void insertChar(char * value);
     void del();
     void disp ();
     int isEmpty();
-    char *getHeadValue();
+    Node *getHeadValue();
 };
 
 

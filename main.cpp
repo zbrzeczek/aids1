@@ -1,9 +1,10 @@
 
 #include <iostream>
 #include <cstring>
-#include "StosString.h"
-#include "StosInt.h"
+//#include "StosString.h"
+//#include "StosInt.h"
 #include "List.h"
+#include "Stos.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -55,9 +56,9 @@ int priority (const char char1){
     else return 0;
 }
 
-void znakDoListy(StosString *stosZnakow, List *lista, int *zmiennaMaxMin) {
-    if (stosZnakow->topValue()[0] == 'M'){
-        char *zmienna = stosZnakow->topValue();
+void znakDoListy(Stos *stosZnakow, List *lista, int *zmiennaMaxMin) {
+    if (stosZnakow->topValue()->stringValue[0] == 'M'){
+        char *zmienna = stosZnakow->topValue()->stringValue;
         char *liczbaMinMax = intToString(zmiennaMaxMin);
 
         char *newValue = new char[strlen(liczbaMinMax) + 4];
@@ -66,18 +67,18 @@ void znakDoListy(StosString *stosZnakow, List *lista, int *zmiennaMaxMin) {
 
         newValue[strlen(liczbaMinMax) + 4] = '\0';
 
-        lista->insert(newValue);
+        lista->insertChar(newValue);
         //stosMaxMin->pop();
         //if (!stosMaxMin->isEmpty()) stosMaxMin->add(1);
         delete[] newValue;
     }
     else {
-        lista->insert(stosZnakow->topValue());
+        lista->insertChar(stosZnakow->topValue()->stringValue);
     }
     stosZnakow->pop();
 }
 
-void calculationsOperator(char *token, StosInt *stos, int *calculations) {
+void calculationsOperator(char *token, Stos *stos, int *calculations) {
     int result;
     int op1, op2;
     printf("%s ", token);
@@ -89,9 +90,9 @@ void calculationsOperator(char *token, StosInt *stos, int *calculations) {
         strncpy(compareMaxMin, token, 3);
         int iloscMinMax = stringToInt(tempptr);
         for (int i =0; i<iloscMinMax-1; i++){
-            op1 = stos->topValue();
+            op1 = stos->topValue()->intValue;
             stos->pop();
-            op2 = stos->topValue();
+            op2 = stos->topValue()->intValue;
             stos->pop();
             if (strncmp(token, "MAX", 3) == FALSE) result = max(op1, op2);
             else result = min(op1, op2);
@@ -100,36 +101,36 @@ void calculationsOperator(char *token, StosInt *stos, int *calculations) {
         delete[] compareMaxMin;
     }
     else {
-        op1 = stos->topValue();
+        op1 = stos->topValue()->intValue;
         stos->pop();
         if (strcmp(token, "N") == FALSE) {
             result = -op1;
         }
         else if (strcmp(token, "IF") == FALSE){
-            op2 = stos->topValue();
+            op2 = stos->topValue()->intValue;
             stos->pop();
-            int op3 = stos->topValue();
+            int op3 = stos->topValue()->intValue;
             stos->pop();
             result = op3 > 0 ? op2 : op1;
         }
         else if (strcmp(token, "*") == FALSE){
-            op2 = stos->topValue();
+            op2 = stos->topValue()->intValue;
             stos->pop();
             result = op1*op2;
         }
         else if (strcmp(token, "/") == FALSE){
-            op2 = stos->topValue();
+            op2 = stos->topValue()->intValue;
             stos->pop();
             if(op1 == 0) *calculations = FALSE;
             else result = op2/op1;
         }
         else if (strcmp(token, "+") == FALSE) {
-            op2 = stos->topValue();
+            op2 = stos->topValue()->intValue;
             stos->pop();
             result = op1+op2;
         }
         else {
-            op2 = stos->topValue();
+            op2 = stos->topValue()->intValue;
             stos->pop();
             result = op2 - op1;
         }
@@ -143,8 +144,8 @@ void conversionONP (List *lista){
     int zmiennaMaxMin;
     char token;
     char temp[100];
-    StosString stosZnakow;
-    StosInt stosMaxMin;
+    Stos stosZnakow;
+    Stos stosMaxMin;
     //List lista(head);
 
     std::cin >> token;
@@ -153,45 +154,56 @@ void conversionONP (List *lista){
         if(token == ' ') std::cin >> token;
         if(token == '.') break;
 
+        Node *newItem = new Node;
         int tokenInt = 0;
+        int num =0;
 
         while (token != ' ') {
-            temp[tokenInt] = token;
-            tokenInt++;
-
+            if (isdigit(token)) {
+                newItem->isInt = TRUE;
+                num = num * 10 + (token - '0');
+            }
+            else {
+                newItem->isInt = FALSE;
+                temp[tokenInt] = token;
+                tokenInt++;
+            }
             std::cin.get(token);
         }
 
-        temp[tokenInt] = '\0'; // Null-terminate the string
-        char* string = new char[tokenInt + 2];
-        strcpy(string, temp);
-
-        if (isdigit(string[0])){
-            lista->insert(string);
+        if (newItem->isInt) newItem->value.intValue = num;
+        else {
+            temp[tokenInt] = '\0'; // Null-terminate the string
+            newItem->value.stringValue = new char[tokenInt + 2];
+            strcpy(newItem->value.stringValue, temp);
         }
-        else if (string[0] == '(') {
+
+        if (newItem->isInt){
+            lista->insert(newItem->value.intValue);
+        }
+        else if (newItem->value.stringValue[0] == '(') {
             stosMaxMin.push(1);
-            stosZnakow.push(string);
+            stosZnakow.push(newItem->value.stringValue);
         }
-        else if (string[0] == ')') {
+        else if (newItem->value.stringValue[0] == ')') {
 
-            while (strcmp(stosZnakow.topValue(), "(") != FALSE) {
+            while (strcmp(stosZnakow.topValue()->stringValue, "(") != FALSE) {
                 znakDoListy(&stosZnakow, lista, &zmiennaMaxMin);
                     /*lista->insert(stosZnakow.topValue());
                     stosZnakow.pop();*/
             }
             if (!stosMaxMin.isEmpty()) {
-                zmiennaMaxMin = stosMaxMin.topValue();
+                zmiennaMaxMin = stosMaxMin.topValue()->intValue;
                 stosMaxMin.pop();
             }
 
             stosZnakow.pop();
         }
-        else if (string[0] == ','){
+        else if (newItem->value.stringValue[0] == ','){
             if (!stosMaxMin.isEmpty()) stosMaxMin.add(1);
 
             //do przypadkow gdy w min/max/if jest jakies rownanie w srodku ex. min( 1 , 2 * 5 + 6 , 2 ) .
-            while (stosZnakow.topValue()[0] != '('){
+            while (stosZnakow.topValue()->stringValue[0] != '('){
                 znakDoListy(&stosZnakow, lista, &zmiennaMaxMin);
                 /*lista->insert(stosZnakow.topValue());
                 stosZnakow.pop();*/
@@ -202,16 +214,16 @@ void conversionONP (List *lista){
             //if (strcmp(string, "MIN") == FALSE || strcmp(string, "MAX") == FALSE) stosMaxMin.push(1);
             //if (strcmp(string, "IF") == FALSE && !stosMaxMin.isEmpty() && (strcmp(string, "MAX") == FALSE || strcmp(string, "MIN") == FALSE)) stosMaxMin.add(-2);
 
-            while (!stosZnakow.isEmpty() && priority(stosZnakow.topValue()[0]) >= priority(string[0])) {
-                if (stosZnakow.topValue()[0] == 'N' && priority(stosZnakow.topValue()[0]) == priority(string[0])) break;
+            while (!stosZnakow.isEmpty() && priority(stosZnakow.topValue()->stringValue[0]) >= priority(newItem->value.stringValue[0])) {
+                if (stosZnakow.topValue()->stringValue[0] == 'N' && priority(stosZnakow.topValue()->stringValue[0]) == priority(newItem->value.stringValue[0])) break;
                 znakDoListy(&stosZnakow, lista, &zmiennaMaxMin);
                 if (stosZnakow.isEmpty()) break;
             }
 
-            stosZnakow.push(string);
+            stosZnakow.push(newItem->value.stringValue);
         }
 
-        delete []string;
+        delete newItem;
     }
     while (!stosZnakow.isEmpty()){
         znakDoListy(&stosZnakow, lista, &zmiennaMaxMin);
@@ -221,8 +233,8 @@ void conversionONP (List *lista){
 }
 
 void calculationsONP (List *lista){
-    char *token;
-    StosInt stosint;
+    Node *token;
+    Stos stosint;
     int calcualtions = TRUE;
 
     lista->disp();
@@ -230,17 +242,17 @@ void calculationsONP (List *lista){
 
     while(!lista->isEmpty()) {
         token = lista->getHeadValue();
-        if (isdigit(token[0])) {
-            stosint.push(stringToInt(token));
+        if (token->isInt) {
+            stosint.push(token->value.intValue);
         }
         else {
-            calculationsOperator(token, &stosint, &calcualtions);
+            calculationsOperator(token->value.stringValue, &stosint, &calcualtions);
             if (calcualtions == FALSE) break;
         }
         lista->del();
     }
     if (calcualtions == FALSE) printf("ERROR\n");
-    else printf("%d\n", stosint.topValue());
+    else printf("%d\n", stosint.topValue()->intValue);
     stosint.pop();
 }
 
