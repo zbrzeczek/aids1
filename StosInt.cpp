@@ -38,7 +38,7 @@ void StosInt::display() {
     NodeInt *current = topHead; // Start from the bottom of the stack
 
     while (current != nullptr) {
-        std::cout << current->value << " "; // Display the value
+        printf("%d ", current->value);
         current = current->next; // Move to the next node
     }
 }

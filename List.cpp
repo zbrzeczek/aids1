@@ -38,7 +38,7 @@ void List::insert(char *value) {
 void List::disp() {
     NodeString *temp = head;
     while (temp != nullptr) {
-        std::cout << temp->value << " ";
+        printf("%s ", temp->value);
         temp = temp->next;
     }
 }
